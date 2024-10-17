@@ -1,5 +1,5 @@
 import numpy as np
-from kim import Kim
+from .kim import Kim
 
 
 methods = {
@@ -7,6 +7,6 @@ methods = {
 }
 
 
-def grayscaleskelet(image: np.array, method="KIM", *args, **kwargs) -> np.array:
+def grayscale_skeletonize(image: np.array, method="KIM", *args, **kwargs) -> np.array:
     return methods[method](image.copy(), *args, **kwargs).run()
 

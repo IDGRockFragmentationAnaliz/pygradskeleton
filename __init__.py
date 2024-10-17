@@ -1,1 +1,1 @@
-from kim import Kim
+from .main import grayscale_skeletonize
