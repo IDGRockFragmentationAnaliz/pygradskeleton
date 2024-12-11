@@ -1,16 +1,22 @@
 import cv2
 import numpy as np
+from time import time
+from tqdm import tqdm
 from .tools import countf
-
+import torch
+import torch.nn.functional as F
 
 class Kim:
-    def __init__(self, image, steps=10, h=20):
-        self.image = image.copy()
+    def __init__(self, grayscale_image, steps=10, h=20):
+        ndim = (len(grayscale_image.shape))
+        if ndim == 2:
+            self.image = grayscale_image
+        else:
+            self.image = grayscale_image[:, :, 0]
         self.h = h
         self.steps = steps
         shape = self.image.shape
         self.compstar = np.zeros(shape)
-        self.c8 = np.zeros(shape)
         self.E = np.zeros(shape)
         self.result = np.zeros(shape)
 
@@ -29,22 +35,21 @@ class Kim:
         ], dtype=np.uint8)
 
     def step(self):  # noqa: C901
+        t = time()
         helper1 = cv2.erode(self.image, self.kernel, iterations=1)
         helper2 = cv2.erode(self.image, self.kernel2, iterations=1)
-        e_inner = helper1.copy()[1:-1, 1:-1].astype(int)
-        o1_inner = cv2.dilate(helper1, self.kernel, iterations=1)[1:-1, 1:-1].astype(int)
-        o2_inner = cv2.dilate(helper2, self.kernel2, iterations=1)[1:-1, 1:-1].astype(int)
+        e = helper1.copy().astype(int)
+        o1 = cv2.dilate(helper1, self.kernel, iterations=1).astype(int)
+        o2 = cv2.dilate(helper2, self.kernel2, iterations=1).astype(int)
+        img = torch.tensor(self.image, dtype=torch.uint8, device='cuda')
+        compstar = self.get_compstar(img, o1, o2, e)
+        c8 = countf(img) >= 2
+        if torch.equal(compstar[1:-1, 1:-1][c8], img[1:-1, 1:-1][c8]):
+            return True
 
-        img_slice = self.image[1:-1, 1:-1].astype(int)
-        mask = (img_slice - o1_inner > 0) & (img_slice - o2_inner > self.h)
-        self.result[1:-1, 1:-1] = np.where(mask, img_slice, 0)
-
-        self.compstar[1:-1, 1:-1] = np.maximum(e_inner, self.result[1:-1, 1:-1].astype(int))
-        self.c8[1:-1, 1:-1] = countf(self.image)
-        mask_c8 = self.c8[1:-1, 1:-1] >= 2
-        self.compstar[1:-1, 1:-1][mask_c8] = self.image[1:-1, 1:-1][mask_c8]
-
-        self.image = self.compstar.copy()
+        compstar[1:-1, 1:-1][c8] = img[1:-1, 1:-1][c8]
+        self.image = compstar.cpu().numpy().copy()
+        return False
 
     def after_processing(self):
         helper1 = cv2.erode(self.image, self.kernel, iterations=1)
@@ -58,7 +63,24 @@ class Kim:
         self.result[1:-1, 1:-1] = np.where(mask1 & mask2, self.image[1:-1, 1:-1], 0)
 
     def run(self):
-        for i in range(10):
-            self.step()
+        for i in tqdm(range(150)):
+            if self.step():
+                break
         self.after_processing()
+        self.result[self.result > self.h] = 255
         return self.result
+
+    def get_mask(self, img: torch.Tensor, o1: torch.Tensor, o2: torch.Tensor):
+        mask_1 = img > o1
+        mask_2 = (img >= o2) & ((img - o2) > self.h)
+        mask = mask_1 & mask_2
+        return mask
+
+    def get_compstar(self, img, o1, o2, e):
+        e = torch.tensor(e, dtype=torch.uint8, device='cuda')
+        o1 = torch.tensor(o1, dtype=torch.uint8, device='cuda')
+        o2 = torch.tensor(o2, dtype=torch.uint8, device='cuda')
+        mask = self.get_mask(img, o1, o2)
+        result = torch.where(mask, img, 0)
+        compstar = torch.maximum(e, result)
+        return compstar
