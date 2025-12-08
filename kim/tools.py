@@ -1,6 +1,5 @@
 import numpy as np
 from time import time
-from numba import njit, prange
 import torch
 
 
