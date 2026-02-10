@@ -33,6 +33,8 @@ class Kim:
             [0, 1, 1, 1, 0],
             [0, 0, 1, 0, 0]
         ], dtype=np.uint8)
+        self.device = "cuda"
+        #self.device = "cpu"
 
     def step(self):  # noqa: C901
         t = time()
@@ -41,7 +43,7 @@ class Kim:
         e = helper1.copy().astype(int)
         o1 = cv2.dilate(helper1, self.kernel, iterations=1).astype(int)
         o2 = cv2.dilate(helper2, self.kernel2, iterations=1).astype(int)
-        img = torch.tensor(self.image, dtype=torch.uint8, device='cuda')
+        img = torch.tensor(self.image, dtype=torch.uint8, device=self.device)
         compstar = self.get_compstar(img, o1, o2, e)
         c8 = countf(img) >= 2
         if torch.equal(compstar[1:-1, 1:-1][c8], img[1:-1, 1:-1][c8]):
@@ -77,9 +79,9 @@ class Kim:
         return mask
 
     def get_compstar(self, img, o1, o2, e):
-        e = torch.tensor(e, dtype=torch.uint8, device='cuda')
-        o1 = torch.tensor(o1, dtype=torch.uint8, device='cuda')
-        o2 = torch.tensor(o2, dtype=torch.uint8, device='cuda')
+        e = torch.tensor(e, dtype=torch.uint8, device=self.device)
+        o1 = torch.tensor(o1, dtype=torch.uint8, device=self.device)
+        o2 = torch.tensor(o2, dtype=torch.uint8, device=self.device)
         mask = self.get_mask(img, o1, o2)
         result = torch.where(mask, img, 0)
         compstar = torch.maximum(e, result)
