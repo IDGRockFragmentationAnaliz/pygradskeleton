@@ -11,4 +11,10 @@ result_1 = grayscaleskelet(image, method="KIM")
 
 ```commandline
 pip intsall numpy
+pip install opencv-contrib-python
+```
+
+## Optional
+```commandline
+pip install matplotlib
 ```
