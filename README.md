@@ -8,3 +8,7 @@ from pygradskeleton import grayscaleskelet
 image = cv2.imread("path/to/image")
 result_1 = grayscaleskelet(image, method="KIM")
 ```
+
+```commandline
+pip intsall numpy
+```
