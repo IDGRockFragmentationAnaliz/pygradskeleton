@@ -23,7 +23,7 @@ def pdestr4(image):
     t4m, t4mm, t8p, t8pp = nbtopo(image)
     destructible = np.zeros_like(image, dtype=np.uint8)
     destructible_center = destructible[1:-1, 1:-1]
-    destructible_center[(t4mm == 1) & (t8pp == 1)] = 1
+    destructible_center[(t4mm == 1) & (t8p == 1)] = 1
     return destructible
 
 

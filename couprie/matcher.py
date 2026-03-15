@@ -52,19 +52,24 @@ class Matcher:
                 (buffer[(0, 1)] | buffer[(1, 1)]) &
                 (buffer[(0, -1)] | buffer[(1, -1)])
         )
+        mask &= self.destroyable_view[(1, 0)] == DESTRUCTIBLE
+        mask &= self.destroyable_view[(0, 0)] == DESTRUCTIBLE
         mask &= self.alpha_view[(1, 0)] < self.image_view[(0, 0)]
         self.destroyable_view[(0, 0)][mask] = CRUCIAL_C
-        self.destroyable_view[(1, 0)][mask] = CRUCIAL_C
+        #self.destroyable_view[(1, 0)][mask] = CRUCIAL_C
 
         # (-1, 0)
         mask = (
                 buffer[(-1, 0)] &
-                (buffer[(0, 1)] | buffer[(-1, 1)]) &
-                (buffer[(0, -1)] | buffer[(-1, -1)])
+                (buffer[(0, -1)] | buffer[(-1, -1)]) &
+                (buffer[(0, 1)] | buffer[(-1, 1)])
+
         )
+        mask &= self.destroyable_view[(-1, 0)] == DESTRUCTIBLE
+        mask &= self.destroyable_view[(0, 0)] == DESTRUCTIBLE
         mask &= self.alpha_view[(-1, 0)] < self.image_view[(0, 0)]
         self.destroyable_view[(0, 0)][mask] = CRUCIAL_C
-        self.destroyable_view[(-1, 0)][mask] = CRUCIAL_C
+        #self.destroyable_view[(-1, 0)][mask] = CRUCIAL_C
 
         # (0, 1)
         mask = (
@@ -72,9 +77,11 @@ class Matcher:
                 (buffer[(-1, 0)] | buffer[(-1, 1)]) &
                 (buffer[(1, 0)] | buffer[(1, 1)])
         )
+        mask &= self.destroyable_view[(0, 1)] == DESTRUCTIBLE
+        mask &= self.destroyable_view[(0, 0)] == DESTRUCTIBLE
         mask &= self.alpha_view[(0, 1)] < self.image_view[(0, 0)]
         self.destroyable_view[(0, 0)][mask] = CRUCIAL_C
-        self.destroyable_view[(0, 1)][mask] = CRUCIAL_C
+        #self.destroyable_view[(0, 1)][mask] = CRUCIAL_C
 
         # (0, -1)
         mask = (
@@ -82,27 +89,20 @@ class Matcher:
                 (buffer[(-1, 0)] | buffer[(-1, -1)]) &
                 (buffer[(1, 0)] | buffer[(1, -1)])
         )
+        mask &= self.destroyable_view[(0, -1)] == DESTRUCTIBLE
+        mask &= self.destroyable_view[(0, 0)] == DESTRUCTIBLE
         mask &= self.alpha_view[(0, -1)] < self.image_view[(0, 0)]
         self.destroyable_view[(0, 0)][mask] = CRUCIAL_C
-        self.destroyable_view[(0, -1)][mask] = CRUCIAL_C
+        #self.destroyable_view[(0, -1)][mask] = CRUCIAL_C
 
-    def run(self):
-        template = np.array([
-            [-1,-1,-1],
-            [-1, 1, 1],
-            [-1, 1, 1],
-        ])
-        c = self.image_view[(0, 0)]
-        mask = self.get_template_mask(template)
-        kernel = (template >= 1).astype(np.uint8)
-        kernel = np.array([
-            [1, 1, 0],
-            [1, 1, 0],
-            [0, 0, 0],
-        ], dtype=np.uint8)
-        mask = cv2.dilate(mask.astype(np.uint8), kernel, iterations=1) > 0
-        c[mask] = 0
-        return c
+    def match_c1(self):
+        """
+            [-1, 0, 1]
+            [-1, 1, 0]
+            [-1, 3, 3]
+        """
+        buffer = self.buffer
+        mask = buffer[(1, 1)] & (~buffer[(0, 1)] | ~buffer[(1, 1)])
 
     def __init__(self, image, destroyable, alpha):
         self.image = image
