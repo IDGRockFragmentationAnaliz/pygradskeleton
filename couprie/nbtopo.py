@@ -42,6 +42,21 @@ def nbtopo(image):
     return t4m, t4mm, t8p, t8pp
 
 
+def nbtopo2(image):
+    t4_zeros = get_t4_zeros()
+    t8_ones = get_t8_ones()
+
+    bitmask_p = get_bitmask_m(image)
+    t4pp = t4_zeros[bitmask_p]
+    t8m = t8_ones[bitmask_p]
+
+    bitmask_pp = get_bitmask_mm(image)
+    t4p = t4_zeros[bitmask_pp]
+    t8mm = t8_ones[bitmask_pp]
+
+    return t4p, t4pp, t8m, t8mm
+
+
 def get_bitmask_pp(image):
     image_view = build_views3x3(image)
     center = image_view[(0, 0)]
@@ -59,6 +74,26 @@ def get_bitmask_p(image):
     packed = np.zeros(center.shape, dtype=np.uint8)
     for offset, bit in offsets:
         result = image_view[offset] >= center
+        packed |= result.astype(np.uint8) << bit
+    return packed
+
+def get_bitmask_mm(image):
+    image_view = build_views3x3(image)
+    center = image_view[(0, 0)]
+    # pp mask
+    packed = np.zeros(center.shape, dtype=np.uint8)
+    for offset, bit in offsets:
+        result = image_view[offset] < center
+        packed |= result.astype(np.uint8) << bit
+    return packed
+
+def get_bitmask_m(image):
+    image_view = build_views3x3(image)
+    center = image_view[(0, 0)]
+    # pp mask
+    packed = np.zeros(center.shape, dtype=np.uint8)
+    for offset, bit in offsets:
+        result = image_view[offset] <= center
         packed |= result.astype(np.uint8) << bit
     return packed
 
