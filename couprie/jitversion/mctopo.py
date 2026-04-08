@@ -3,6 +3,11 @@ from numba import njit
 from .nbtopo import nbtopo
 
 @njit
+def hseparant4(image, x, y):
+    h, w = image.shape
+
+
+@njit
 def pdestr4(image):
     h, w = image.shape
     destructible = np.zeros_like(image, dtype=np.uint8)
@@ -14,3 +19,5 @@ def pdestr4(image):
                 destructible[y, x] = 1
 
     return destructible
+
+
