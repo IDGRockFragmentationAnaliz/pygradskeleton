@@ -3,7 +3,7 @@ from numba import njit
 from .nbtopo import nbtopo
 
 @njit
-def pdestr4(image):
+def pdestr4_all(image):
     h, w = image.shape
     destructible = np.zeros_like(image, dtype=np.uint8)
 
