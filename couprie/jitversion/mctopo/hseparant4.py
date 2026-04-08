@@ -2,7 +2,7 @@ from numba import njit
 import numpy as np
 from .nbtopoh import nbtopoh
 from .nbtopo import nbtopo
-from .voisin import voisin
+from ..voisin import voisin
 
 @njit
 def separant4(image: np.ndarray, y, x):
