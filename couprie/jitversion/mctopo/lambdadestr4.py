@@ -23,20 +23,19 @@ def lambdadestr4(image, y, x, lam):
         center = int(image[y, x])
 
         for i in range(t4mm):
-            mi = COMP4TAB[m, i]
+            mi = COMP4TAB[m][i]
             if mi == 0:
                 break
-
+            # нету
             ok = True
-            bits = mi
-
+            #
             for k in range(8):
-                if (bits & 1) != 0:
+                if (mi & 1) != 0:
                     qy, qx = voisin(y, x, k)
                     if (center - int(image[qy, qx])) > lam:
                         ok = False
                         break
-                bits = bits >> 1
+                mi = mi >> 1
 
             if ok:
                 n += 1
