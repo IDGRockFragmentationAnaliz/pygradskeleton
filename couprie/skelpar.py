@@ -5,8 +5,8 @@ import numpy as np
 
 def lhthinpar(image):
     image = image.copy()
+    n = image.size
     for i in range(1000):
-        print(i)
         alpha = AlphaBuilder(image).alpha8m()
         destructible = pdestr4_all(image)
         matcher = Matcher(image, destructible, alpha)
@@ -15,6 +15,7 @@ def lhthinpar(image):
 
         mask = destructible == 1
         idx = np.flatnonzero(mask)
+        print((1 - idx.size / n) * 100)
         if idx.size == 0:
             print(i)
             break
