@@ -4,16 +4,16 @@ from .mctopo.hseparant4 import hseparant4, separant4
 from .voisin import voisin
 
 @njit
-def extensible4(image, y, x):
-    if not separant4(image, y, x):
+def extensible4(image, p_y, p_x):
+    if not separant4(image, p_y, p_x):
         return 0
     nivext = 0
     for k in range(8):
-        x2, y2 = voisin(y, x, k)
-        if image[y2, x2] > image[y, x]:
-            if image[y2, x2] > nivext:
-                nivext = image[y2, x2]
-    return 1
+        q_x, q_y = voisin(p_y, p_x, k)
+        if image[q_y, q_x] > image[p_y, p_x]:
+            if image[q_y, q_x] > nivext:
+                nivext = image[q_y, q_x]
+    return nivext
 
 @njit
 def extensible4_all(image):
