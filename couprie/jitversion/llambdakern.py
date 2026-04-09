@@ -21,7 +21,7 @@ def llambdakern(image, lam):
                 if seen[p] == 1:
                     seen[p] = 0
                     head = head - 1
-                    if abaisse4(image, y, x, lam):
+                    if abaisse4(image, y, x, lam): #main weigh function
                         for k in range(8):
                             qy, qx = voisin(y, x, k)
                             q = qy * width + qx
