@@ -3,8 +3,9 @@ from couprie.alpha_builder import AlphaBuilder
 from couprie.jitversion.mctopo.pdestr4 import pdestr4_all
 import numpy as np
 
-def lhthinpar(image):
-    image = image.copy()
+def lhthinpar(image, copy=True):
+    if copy:
+        image = image.copy()
     n = image.size
     for i in range(1000):
         alpha = AlphaBuilder(image).alpha8m()
@@ -22,8 +23,9 @@ def lhthinpar(image):
         image.flat[idx] = alpha.flat[idx]
     return image
 
-def lhthinpar_asymmetric(image):
-    image = image.copy()
+def lhthinpar_asymmetric(image, copy=True):
+    if copy:
+        image = image.copy()
     for i in range(1000):
         alpha = AlphaBuilder(image).alpha8m()
         destructible = pdestr4_all(image)
