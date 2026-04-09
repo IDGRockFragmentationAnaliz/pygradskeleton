@@ -4,7 +4,10 @@ from .abaisse4 import abaisse4
 from .voisin import voisin
 
 @njit
-def llambdakern(image, lam):
+def llambdakern(image, lam, copy = True):
+    if copy:
+        image = image.copy()
+
     height, width = image.shape
     n = height * width
     seen = np.zeros(n, np.uint8)
