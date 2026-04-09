@@ -2,6 +2,7 @@ from numba import njit
 import numpy as np
 from .nbtopo import nbtopo
 
+@njit
 def pconstr4(image, y, x):
     t4m, t4mm, t8p, t8pp = nbtopo(image, y, x)
 
