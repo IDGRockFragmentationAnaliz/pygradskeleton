@@ -3,6 +3,7 @@ import numpy as np
 from .pconstr4 import pconstr4
 from .alpha8m import alpha8m
 
+@njit
 def delta4p(image, y, x):
     _saved = image[y, x]
     while pconstr4(image, y, x):
