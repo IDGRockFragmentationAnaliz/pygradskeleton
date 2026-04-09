@@ -1,6 +1,6 @@
 from couprie.matcher import Matcher
 from couprie.alpha_builder import AlphaBuilder
-from couprie.jitversion.mctopo.pdstr4 import pdestr4
+from couprie.jitversion.mctopo.pdestr4 import pdestr4_all
 import numpy as np
 
 def lhthinpar(image):
@@ -8,7 +8,7 @@ def lhthinpar(image):
     for i in range(1000):
         print(i)
         alpha = AlphaBuilder(image).alpha8m()
-        destructible = pdestr4(image)
+        destructible = pdestr4_all(image)
         matcher = Matcher(image, destructible, alpha)
         matcher.match_c()
         #matcher.match_c1()
@@ -25,7 +25,7 @@ def lhthinpar_asymmetric(image):
     image = image.copy()
     for i in range(1000):
         alpha = AlphaBuilder(image).alpha8m()
-        destructible = pdestr4(image)
+        destructible = pdestr4_all(image)
         matcher = Matcher(image, destructible, alpha)
         matcher.match_c_asymmetric()
 
