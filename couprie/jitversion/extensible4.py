@@ -6,14 +6,14 @@ from .voisin import voisin
 @njit
 def extensible4(image, y, x):
     if not separant4(image, y, x):
-        return 1
+        return 0
     nivext = 0
     for k in range(8):
         x2, y2 = voisin(y, x, k)
         if image[y2, x2] > image[y, x]:
             if image[y2, x2] > nivext:
                 nivext = image[y2, x2]
-    return 0
+    return 1
 
 @njit
 def extensible4_all(image):
