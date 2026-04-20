@@ -3,6 +3,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 from couprie.skelpar import lhthinpar, lhthinpar_asymmetric
 from couprie.jitversion.llambdakern import llambdakern
+from couprie.jitversion.thin_segment import thin_segment
+from couprie.jitversion.crestrestoration import crestrestore
 
 def main():
     img_path = "../test_images/test_2.png"
@@ -15,21 +17,25 @@ def main():
     image = original.copy()
 
     image = lhthinpar(image)
-    image = lhthinpar_asymmetric(image)
-    image = llambdakern(image, 20)
+    image_skel = lhthinpar_asymmetric(image)
+    image_lamb = llambdakern(image_skel, 20)
+    image_lamb = crestrestore(image_skel)
+    #image_lamb = thin_segment(image_lamb)
 
     # Отображение
     fig = plt.figure(figsize=(10, 5))
 
     ax1 = fig.add_subplot(1, 2, 1)
-    ax1.imshow(original, cmap="gray")
+    ax1.imshow(image_skel, cmap="gray")
     ax1.set_title("Исходное изображение")
     ax1.axis("off")
 
     ax2 = fig.add_subplot(1, 2, 2)
-    ax2.imshow(image, cmap="gray")
+    ax2.imshow(image_lamb, cmap="gray")
     ax2.set_title("Конечное изображение")
     ax2.axis("off")
+    ax2.sharex(ax1)
+    ax2.sharey(ax1)
 
     plt.tight_layout()
     plt.show()
