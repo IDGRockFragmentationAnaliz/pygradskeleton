@@ -9,7 +9,7 @@ def extensible4(image, p_y, p_x):
         return 0
     nivext = 0
     for k in range(8):
-        q_x, q_y = voisin(p_y, p_x, k)
+        q_y, q_x = voisin(p_y, p_x, k)
         if image[q_y, q_x] > image[p_y, p_x]:
             if image[q_y, q_x] > nivext:
                 nivext = image[q_y, q_x]
