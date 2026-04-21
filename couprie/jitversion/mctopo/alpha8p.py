@@ -3,47 +3,47 @@ import numpy as np
 
 
 @njit
-def alpha8p(img, p, rs):
-    val = img[p]
+def alpha8p(image, y, x):
+    val = image[y, x]
     found = False
     alpha = np.uint8(0)
 
-    v = img[p + 1]
+    v = image[y, x + 1]
     if v > val:
         alpha = v
         found = True
 
-    v = img[p + 1 - rs]
+    v = image[y - 1, x + 1]
     if v > val and (not found or v < alpha):
         alpha = v
         found = True
 
-    v = img[p - rs]
+    v = image[y - 1, x]
     if v > val and (not found or v < alpha):
         alpha = v
         found = True
 
-    v = img[p - rs - 1]
+    v = image[y - 1, x - 1]
     if v > val and (not found or v < alpha):
         alpha = v
         found = True
 
-    v = img[p - 1]
+    v = image[y, x - 1]
     if v > val and (not found or v < alpha):
         alpha = v
         found = True
 
-    v = img[p - 1 + rs]
+    v = image[y + 1, x - 1]
     if v > val and (not found or v < alpha):
         alpha = v
         found = True
 
-    v = img[p + rs]
+    v = image[y + 1, x]
     if v > val and (not found or v < alpha):
         alpha = v
         found = True
 
-    v = img[p + rs + 1]
+    v = image[y + 1, x + 1]
     if v > val and (not found or v < alpha):
         alpha = v
         found = True
