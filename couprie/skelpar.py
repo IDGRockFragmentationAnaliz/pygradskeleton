@@ -1,6 +1,6 @@
-from couprie.matcher import Matcher
-from couprie.alpha_builder import AlphaBuilder
-from couprie.jitversion.mctopo.pdestr4 import pdestr4_all
+from .matcher import Matcher
+from .alpha_builder import AlphaBuilder
+from .jitversion.mctopo.pdestr4 import pdestr4_all
 import numpy as np
 
 def lhthinpar(image, copy=True):
