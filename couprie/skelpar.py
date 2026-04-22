@@ -16,9 +16,9 @@ def lhthinpar(image, copy=True):
 
         mask = destructible == 1
         idx = np.flatnonzero(mask)
-        print((1 - idx.size / n) * 100)
+        # print((1 - idx.size / n) * 100)
         if idx.size == 0:
-            print(i)
+            # print(i)
             break
         image.flat[idx] = alpha.flat[idx]
     return image
@@ -35,7 +35,7 @@ def lhthinpar_asymmetric(image, copy=True):
         mask = destructible == 1
         idx = np.flatnonzero(mask)
         if idx.size == 0:
-            print(i)
+            # print(i)
             break
         image.flat[idx] = alpha.flat[idx]
     return image
