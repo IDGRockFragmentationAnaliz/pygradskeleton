@@ -1,6 +1,6 @@
 import numpy as np
 from .kim import Kim
-from couprie.couprie_skeletonize import couprie
+from .couprie.couprie_skeletonize import couprie
 
 
 methods = {
