@@ -5,6 +5,7 @@ from couprie.skelpar import lhthinpar, lhthinpar_asymmetric
 from couprie.jitversion.llambdakern import llambdakern
 from couprie.jitversion.thin_segment import thin_segment
 from couprie.jitversion.crestrestoration import crestrestore
+from couprie.couprie_skeletonize import couprie
 
 def main():
     img_path = "../test_images/test_2.png"
@@ -16,17 +17,18 @@ def main():
     # Копия для обработки
     image = original.copy()
 
-    image = lhthinpar(image)
-    image_skel = lhthinpar_asymmetric(image)
-    image_lamb = llambdakern(image_skel, 20)
-    #image_lamb = crestrestore(image_skel)
-    image_lamb = thin_segment(image_lamb)
+    image_lamb = couprie(image, 20)
+    # image = lhthinpar(image)
+    # image_skel = lhthinpar_asymmetric(image)
+    # image_lamb = llambdakern(image_skel, 20)
+    # #image_lamb = crestrestore(image_skel)
+    # image_lamb = thin_segment(image_lamb)
 
     # Отображение
     fig = plt.figure(figsize=(10, 5))
 
     ax1 = fig.add_subplot(1, 2, 1)
-    ax1.imshow(image_skel, cmap="gray")
+    ax1.imshow(image, cmap="gray")
     ax1.set_title("Исходное изображение")
     ax1.axis("off")
 
