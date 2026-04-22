@@ -19,8 +19,8 @@ def main():
     image = lhthinpar(image)
     image_skel = lhthinpar_asymmetric(image)
     image_lamb = llambdakern(image_skel, 20)
-    image_lamb = crestrestore(image_skel)
-    #image_lamb = thin_segment(image_lamb)
+    #image_lamb = crestrestore(image_skel)
+    image_lamb = thin_segment(image_lamb)
 
     # Отображение
     fig = plt.figure(figsize=(10, 5))
