@@ -12,6 +12,7 @@ result_1 = grayscaleskelet(image, method="KIM")
 ```commandline
 pip intsall numpy
 pip install opencv-contrib-python
+pip install numba
 ```
 
 ## Optional

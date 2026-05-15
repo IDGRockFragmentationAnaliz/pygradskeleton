@@ -1,11 +1,13 @@
 import numpy as np
 from .kim import Kim
+from .couprie.couprie_skeletonize import couprie
 
 
 methods = {
-       "KIM": Kim
+    "KIM": Kim,
+    "COUPRIE": couprie
 }
 
 
-def grayscale_skeletonize(image: np.array, method="KIM", *args, **kwargs) -> np.array:
-    return methods[method](image, *args, **kwargs).run()
+def grayscale_skeletonize(image: np.array, method="COUPRIE", *args, **kwargs) -> np.array:
+    return methods[method](image, *args, **kwargs)
