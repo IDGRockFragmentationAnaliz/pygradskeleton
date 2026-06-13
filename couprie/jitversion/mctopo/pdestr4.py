@@ -2,7 +2,7 @@ import numpy as np
 from numba import njit
 from .nbtopo import nbtopo
 
-@njit
+@njit(cache=True)
 def pdestr4_all(image):
     h, w = image.shape
     destructible = np.zeros_like(image, dtype=np.uint8)
@@ -15,6 +15,7 @@ def pdestr4_all(image):
 
     return destructible
 
+@njit(cache=True)
 def pdestr4(image, y, x):
     t4m, t4mm, t8p, t8pp = nbtopo(image, y, x)
     if t4mm == 1 and t8p == 1:

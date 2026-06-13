@@ -5,7 +5,7 @@ from .topology import get_t4_zeros, get_t8_ones
 T4_ZEROS = get_t4_zeros().astype(np.uint8)
 T8_ONES = get_t8_ones().astype(np.uint8)
 
-@njit
+@njit(cache=True)
 def maskmm(image, y, x):
     val = image[y, x]
     mask_mm = 0
@@ -19,7 +19,7 @@ def maskmm(image, y, x):
     if image[y + 1, x - 1] < val: mask_mm |= 1 << 7
     return mask_mm
 
-@njit
+@njit(cache=True)
 def nbtopo(image, y, x):
     bitmask = get_bitmask_p(image, y, x)
     t4mm = T4_ZEROS[bitmask]
@@ -31,7 +31,7 @@ def nbtopo(image, y, x):
 
     return t4m, t4mm, t8p, t8pp
 
-@njit
+@njit(cache=True)
 def get_bitmask_p(image, y, x):
     c = image[y, x]
     mask_p = 0
@@ -45,7 +45,7 @@ def get_bitmask_p(image, y, x):
     if image[y + 1, x - 1] >= c: mask_p |= 1 << 7
     return mask_p
 
-@njit
+@njit(cache=True)
 def get_bitmask_pp(image, y, x):
     c = image[y, x]
     mask_p = 0
