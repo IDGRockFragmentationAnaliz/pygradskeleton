@@ -1,6 +1,6 @@
 from numba import njit
 import numpy as np
-from .nbtopo import nbtopo, maskmm
+from .nbtopo import nbtopo, bitmask_mm
 from .alpha8m import alpha8m
 from .topology import get_comp4tab
 from ..voisin import voisin
@@ -19,7 +19,7 @@ def lambdadestr4(image, y, x, lam):
     # k-divergent
     if t4mm >= 2:
         n = 0
-        m = maskmm(image, y, x)
+        m = bitmask_mm(image, y, x)
         center = int(image[y, x])
 
         for i in range(t4mm):
