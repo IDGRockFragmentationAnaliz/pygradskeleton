@@ -52,8 +52,8 @@ class Matcher:
                 (buffer[(0, 1)] | buffer[(1, 1)]) &
                 (buffer[(0, -1)] | buffer[(1, -1)])
         )
-        mask &= self.destroyable_view[(1, 0)] == DESTRUCTIBLE
-        mask &= self.destroyable_view[(0, 0)] == DESTRUCTIBLE
+        mask &= self.destroyable_view[(1, 0)] >= DESTRUCTIBLE
+        mask &= self.destroyable_view[(0, 0)] >= DESTRUCTIBLE
         mask &= self.alpha_view[(1, 0)] < self.image_view[(0, 0)]
         self.destroyable_view[(0, 0)][mask] = CRUCIAL_C
         self.destroyable_view[(1, 0)][mask] = CRUCIAL_C
@@ -77,8 +77,8 @@ class Matcher:
                 (buffer[(-1, 0)] | buffer[(-1, 1)]) &
                 (buffer[(1, 0)] | buffer[(1, 1)])
         )
-        mask &= self.destroyable_view[(0, 1)] == DESTRUCTIBLE
-        mask &= self.destroyable_view[(0, 0)] == DESTRUCTIBLE
+        mask &= self.destroyable_view[(0, 1)] >= DESTRUCTIBLE
+        mask &= self.destroyable_view[(0, 0)] >= DESTRUCTIBLE
         mask &= self.alpha_view[(0, 1)] < self.image_view[(0, 0)]
         self.destroyable_view[(0, 0)][mask] = CRUCIAL_C
         self.destroyable_view[(0, 1)][mask] = CRUCIAL_C
@@ -89,8 +89,8 @@ class Matcher:
                 (buffer[(-1, 0)] | buffer[(-1, -1)]) &
                 (buffer[(1, 0)] | buffer[(1, -1)])
         )
-        mask &= self.destroyable_view[(0, -1)] == DESTRUCTIBLE
-        mask &= self.destroyable_view[(0, 0)] == DESTRUCTIBLE
+        mask &= self.destroyable_view[(0, -1)] >= DESTRUCTIBLE
+        mask &= self.destroyable_view[(0, 0)] >= DESTRUCTIBLE
         mask &= self.alpha_view[(0, -1)] < self.image_view[(0, 0)]
         self.destroyable_view[(0, 0)][mask] = CRUCIAL_C
         self.destroyable_view[(0, -1)][mask] = CRUCIAL_C
