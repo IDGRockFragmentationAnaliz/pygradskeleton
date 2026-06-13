@@ -36,7 +36,7 @@ def lhthinpar(image, copy=True):
         t_pdestr4 += time.perf_counter() - t0
 
         t0 = time.perf_counter()
-        alpha = alpha8m_center(image_padded, alpha, destidx)
+        alpha = alpha8m_center(image_padded, alpha, destidx, w + 2)
         t_alpha8m += time.perf_counter() - t0
 
         t0 = time.perf_counter()
@@ -82,18 +82,10 @@ def pdestr4_center(image, destructible):
 
 
 @njit(cache=True)
-def alpha8m_center(image, alpha, destridx):
-    h, w = image.shape
-    for y in range(1, h - 1):
-        for x in range(1, w - 1):
-            alpha[y, x] = alpha8m(image, y, x)
-    # w = image.shape[1]
-    # for i in range(destridx.size):
-    #     idx = destridx[i]
-    #     y = idx // w
-    #     x = idx - y * w
-    #     alpha[y, x] = alpha8m(image, y, x)
-    # print(1)
+def alpha8m_center(image, alpha, destridx, w):
+    for i in range(destridx.size):
+        idx = destridx[i]
+        alpha.flat[idx] = alpha8m_flat(image.flat, idx, w)
     return alpha
 
 @njit(cache=True)
@@ -101,10 +93,7 @@ def match_c_center(image, destructible, alpha, destridx):
     w = image.shape[1]
     for i in range(destridx.size):
         flat_idx = destridx[i]
-        y = flat_idx // w
-        x = flat_idx - y * w
-        #match_c_flat(image.flat, destructible.flat, alpha.flat, flat_idx, w)
-        match_c(image, destructible, alpha, y, x)
+        match_c_flat(image.flat, destructible.flat, alpha.flat, flat_idx, w)
 
 
 def update_edge_border_pad1(p):
