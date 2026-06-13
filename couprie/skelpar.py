@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import time
 from .matcher import Matcher
 from .alpha_builder import AlphaBuilder
-from .jitversion.mctopo.pdestr4 import pdestr4_all, pdestr4
+from .jitversion.mctopo.pdestr4 import pdestr4_all, pdestr4, pdestr4_flat
 from .jitversion.mctopo.alpha8m import alpha8m, alpha8m_flat
 from .jitversion.match_crutial.match_crutical import match_c
 from .jitversion.match_crutial.match_crutial_flat import match_c_flat
@@ -64,12 +64,7 @@ def lhthinpar(image, copy=True):
     print(f"match_c total: {t_match_c:.6f} sec")
     print(f"t_mask total: {t_mask:.6f} sec")
     print(f"t_end total: {t_end:.6f} sec")
-
-
-
-    return image
-
-
+    return image_padded[1:-1,1:-1]
 
 
 @njit(cache=True)
@@ -77,7 +72,7 @@ def pdestr4_center(image, destructible):
     h, w = image.shape
     for y in range(1, h - 1):
         for x in range(1, w - 1):
-            destructible[y, x] = pdestr4(image, y, x)
+            destructible[y, x] = pdestr4_flat(image, y, x)
     return destructible
 
 
