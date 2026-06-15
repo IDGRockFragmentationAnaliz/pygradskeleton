@@ -71,8 +71,10 @@ def lhthinpar(image, copy=True):
 def pdestr4_center(image, destructible):
     h, w = image.shape
     for y in range(1, h - 1):
+        row = y * w
         for x in range(1, w - 1):
-            destructible[y, x] = pdestr4_flat(image, y, x)
+            idx = row + x
+            destructible.flat[idx] = pdestr4_flat(image.flat, idx, w)
     return destructible
 
 

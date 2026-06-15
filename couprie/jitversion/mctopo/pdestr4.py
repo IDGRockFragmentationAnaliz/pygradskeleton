@@ -1,7 +1,7 @@
 import numpy as np
 from numba import njit
 from .nbtopo import nbtopo, T4_ZEROS, T8_ONES
-from .bitmask import bitmask_p
+from .bitmask import bitmask_p_flat
 
 @njit(cache=True)
 def pdestr4_all(image):
@@ -24,8 +24,8 @@ def pdestr4(image, y, x):
     return False
 
 @njit(cache=True)
-def pdestr4_flat(image, y, x):
-    bitmask = bitmask_p(image, y, x)
+def pdestr4_flat(image, idx, w):
+    bitmask = bitmask_p_flat(image, idx, w)
     t4mm = T4_ZEROS[bitmask]
     t8p = T8_ONES[bitmask]
     if t4mm == 1 and t8p == 1:
