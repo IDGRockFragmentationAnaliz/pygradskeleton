@@ -16,7 +16,7 @@ DESTRUCTIBLE = np.uint8(1)
 CRUCIAL_C = np.uint8(9)
 
 
-@njit(cache=True, inline="always")
+@njit#(cache=True, inline="always")
 def match_c_asymmetric(image_flat, destructible_flat, alpha_flat, bitmasks, p, w):
     bitmask = bitmasks[p]
     _match_c_right_flat(bitmask, image_flat, destructible_flat, alpha_flat, p)
@@ -24,11 +24,11 @@ def match_c_asymmetric(image_flat, destructible_flat, alpha_flat, bitmasks, p, w
     _match_c_up_flat(bitmask, image_flat, destructible_flat, alpha_flat, p, w)
     _match_c_down_flat(bitmask, image_flat, destructible_flat, alpha_flat, p, w)
 
-@njit(cache=True, inline="always")
+@njit#(cache=True, inline="always")
 def _match_c_right_flat(bitmask, image_flat, destructible_flat, alpha_flat, idx):
     right = np.uintp(idx + 1)
 
-    if not (destructible_flat[right] >= DESTRUCTIBLE or destructible_flat[idx] == DESTRUCTIBLE):
+    if not (destructible_flat[right] >= DESTRUCTIBLE and destructible_flat[idx] >= DESTRUCTIBLE):
         return False
 
     if not (alpha_flat[right] < image_flat[idx]):
@@ -48,11 +48,11 @@ def _match_c_right_flat(bitmask, image_flat, destructible_flat, alpha_flat, idx)
     return True
 
 
-@njit(cache=True, inline="always")
+@njit#(cache=True, inline="always")
 def _match_c_left_flat(bitmask, image_flat, destructible_flat, alpha_flat, idx):
     left = np.uintp(idx - 1)
 
-    if not(destructible_flat[left] >= DESTRUCTIBLE or destructible_flat[idx] >= DESTRUCTIBLE):
+    if not(destructible_flat[left] >= DESTRUCTIBLE and destructible_flat[idx] >= DESTRUCTIBLE):
         return False
 
     if not (alpha_flat[left] < image_flat[idx]):
@@ -72,11 +72,11 @@ def _match_c_left_flat(bitmask, image_flat, destructible_flat, alpha_flat, idx):
     return True
 
 
-@njit(cache=True, inline="always")
+@njit#(cache=True, inline="always")
 def _match_c_up_flat(bitmask, image_flat, destructible_flat, alpha_flat, idx, w):
     up = np.uintp(idx - w)
 
-    if not(destructible_flat[up] >= DESTRUCTIBLE or destructible_flat[idx] >= DESTRUCTIBLE):
+    if not(destructible_flat[up] >= DESTRUCTIBLE and destructible_flat[idx] >= DESTRUCTIBLE):
         return False
 
     if not (alpha_flat[up] < image_flat[idx]):
@@ -96,11 +96,11 @@ def _match_c_up_flat(bitmask, image_flat, destructible_flat, alpha_flat, idx, w)
     return True
 
 
-@njit(cache=True, inline="always")
+@njit#(cache=True, inline="always")
 def _match_c_down_flat(bitmask, image_flat, destructible_flat, alpha_flat, idx, w):
     down = np.uintp(idx + w)
 
-    if not (destructible_flat[down] >= DESTRUCTIBLE or destructible_flat[idx] >= DESTRUCTIBLE):
+    if not (destructible_flat[down] >= DESTRUCTIBLE and destructible_flat[idx] >= DESTRUCTIBLE):
         return False
 
     if not (alpha_flat[down] < image_flat[idx]):
