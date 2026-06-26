@@ -8,8 +8,8 @@ from numba.np.ufunc import parallel
 
 from .matcher import Matcher
 from .alpha_builder import AlphaBuilder
-from .jitversion.mctopo.pdestr4 import pdestr4_all, pdestr4_flat
-from .jitversion.mctopo.alpha8m import alpha8m_flat
+from .jitflatversion.mctopo.pdestr4 import pdestr4
+from .jitflatversion.mctopo.alpha8m import alpha8m
 from .jitflatversion.match_crutial.match_crutial import match_c
 from .jitversion.voisin import voisin_flat
 
@@ -151,14 +151,14 @@ def pdestr4_center(image, destructible, bitmask, idx):
     k = 0
     for i in prange(idx.size):
         p = idx[i]
-        destructible.flat[p] = pdestr4_flat(image.flat, bitmask.flat, p, w)
+        destructible.flat[p] = pdestr4(image.flat, bitmask.flat, p, w)
     return destructible
 
 @njit(cache=True, parallel=True)
 def alpha8m_center(image, alpha, destridx, w):
     for i in prange(destridx.size):
         idx = destridx[i]
-        alpha.flat[idx] = alpha8m_flat(image.flat, idx, w)
+        alpha.flat[idx] = alpha8m(image.flat, idx, w)
     return alpha
 
 @njit(cache=True)
