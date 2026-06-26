@@ -1,7 +1,6 @@
 import numpy as np
 import numba as nb
 from numba import njit
-from ..mctopo.bitmask import bitmask_p_flat
 
 M1 = np.uint8(1 << 0)
 M2 = np.uint8(1 << 1)
@@ -18,7 +17,7 @@ CRUCIAL_C = np.uint8(9)
 
 @njit(cache=True, inline="always")
 def match_c_flat(image_flat, destructible_flat, alpha_flat, bitmasks, p, w):
-    bitmask = bitmask_p_flat(image_flat, p, w)#bitmasks[p]#
+    bitmask = bitmasks[p]
     match_c_right_flat(bitmask, image_flat, destructible_flat, alpha_flat, p)
     match_c_left_flat(bitmask, image_flat, destructible_flat, alpha_flat, p)
     match_c_up_flat(bitmask, image_flat, destructible_flat, alpha_flat, p, w)

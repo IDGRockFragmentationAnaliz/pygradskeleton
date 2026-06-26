@@ -21,7 +21,7 @@ def main():
     print("lhthinpar:", time.perf_counter() - t)
 
     t = time.perf_counter()
-    image_thin = lhthinpar_asymmetric(image)
+    #image_thin = lhthinpar_asymmetric(image)
     print("lhthinpar_asymmetric", time.perf_counter() - t)
     #
     # t = time.perf_counter()

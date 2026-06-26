@@ -10,8 +10,8 @@ from .matcher import Matcher
 from .alpha_builder import AlphaBuilder
 from .jitversion.mctopo.pdestr4 import pdestr4_all, pdestr4, pdestr4_flat
 from .jitversion.mctopo.alpha8m import alpha8m, alpha8m_flat
-from .jitversion.match_crutial.match_crutical import match_c
-from .jitversion.match_crutial.match_crutial_flat import match_c_flat
+from .jitflatversion.match_crutial.match_crutical import match_c
+from .jitflatversion.match_crutial.match_crutial_flat import match_c_flat
 from .jitversion.voisin import voisin_flat
 
 def lhthinpar(image, copy=True):
