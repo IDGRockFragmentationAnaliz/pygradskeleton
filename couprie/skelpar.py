@@ -33,7 +33,6 @@ def lhthinpar(image, copy=True):
     idx = np.flatnonzero(destructible)
     w_pad = w + 2
     h_pad = h + 2
-    t_end = 0.0
     for i in range(10000):
         #Обновление паддинга обновленного фото
         set_edge_pad1(image_padded)
@@ -54,17 +53,11 @@ def lhthinpar(image, copy=True):
             break
         #Обновление изображения
         image_padded.flat[idx] = alpha.flat[idx]
-
         # Расширение диапазона актуальности
-        t0 = time.perf_counter()
-        #destructible_kernel_update(destructible_flat, idx, h_pad, w_pad)
-        #idx = np.flatnonzero(destructible == 1)
         idx = expand_sparce(destructible, idx, h_pad, w_pad)
-        t_end += time.perf_counter() - t0
-    print(f"t_end total: {t_end:.6f} sec")
     return image_padded[1:-1,1:-1]
 
-def lhthinpar_asymmetric_new(image, copy=True):
+def lhthinpar_asymmetric(image, copy=True):
     if copy:
         image = image.copy()
 
@@ -82,7 +75,6 @@ def lhthinpar_asymmetric_new(image, copy=True):
     idx = np.flatnonzero(destructible)
     w_pad = w + 2
     h_pad = h + 2
-    t_end = 0.0
     for i in range(10000):
         #Обновление паддинга обновленного фото
         set_edge_pad1(image_padded)
@@ -103,14 +95,8 @@ def lhthinpar_asymmetric_new(image, copy=True):
             break
         #Обновление изображения
         image_padded.flat[idx] = alpha.flat[idx]
-
         # Расширение диапазона актуальности
-        t0 = time.perf_counter()
-        #destructible_kernel_update(destructible_flat, idx, h_pad, w_pad)
-        #idx = np.flatnonzero(destructible == 1)
         idx = expand_sparce(destructible, idx, h_pad, w_pad)
-        t_end += time.perf_counter() - t0
-    print(f"t_end total: {t_end:.6f} sec")
     return image_padded[1:-1,1:-1]
 
 @njit(cache=True, parallel=True)
@@ -140,7 +126,7 @@ def _match_c_center(image, destructible, alpha, bitmask, destridx, w):
         p = destridx[i]
         match_c(image, destructible, alpha, bitmask, p, w)
 
-@njit(cache=True)
+@njit#(cache=True)
 def _match_c_asymmetric_center(image, destructible, alpha, bitmask, destridx, w):
     image = image.flat
     destructible = destructible.flat
@@ -150,20 +136,3 @@ def _match_c_asymmetric_center(image, destructible, alpha, bitmask, destridx, w)
     for i in range(destridx.size):
         p = destridx[i]
         match_c_asymmetric(image, destructible, alpha, bitmask, p, w)
-
-def lhthinpar_asymmetric(image, copy=True):
-    if copy:
-        image = image.copy()
-    for i in range(1000):
-        alpha = AlphaBuilder(image).alpha8m()
-        destructible = pdestr4_all(image)
-        matcher = Matcher(image, destructible, alpha)
-        matcher.match_c_asymmetric()
-
-        mask = destructible == 1
-        idx = np.flatnonzero(mask)
-        if idx.size == 0:
-            # print(i)
-            break
-        image.flat[idx] = alpha.flat[idx]
-    return image
