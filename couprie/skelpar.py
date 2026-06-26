@@ -8,10 +8,9 @@ from numba.np.ufunc import parallel
 
 from .matcher import Matcher
 from .alpha_builder import AlphaBuilder
-from .jitversion.mctopo.pdestr4 import pdestr4_all, pdestr4, pdestr4_flat
-from .jitversion.mctopo.alpha8m import alpha8m, alpha8m_flat
-from .jitflatversion.match_crutial.match_crutical import match_c
-from .jitflatversion.match_crutial.match_crutial_flat import match_c_flat
+from .jitversion.mctopo.pdestr4 import pdestr4_all, pdestr4_flat
+from .jitversion.mctopo.alpha8m import alpha8m_flat
+from .jitflatversion.match_crutial.match_crutial import match_c
 from .jitversion.voisin import voisin_flat
 
 def lhthinpar(image, copy=True):
@@ -171,7 +170,7 @@ def match_c_center(image, destructible, alpha, bitmask, destridx, w):
 
     for i in range(destridx.size):
         p = destridx[i]
-        match_c_flat(image, destructible, alpha, bitmask, p, w)
+        match_c(image, destructible, alpha, bitmask, p, w)
 
 
 def set_edge_border_zeros(p):

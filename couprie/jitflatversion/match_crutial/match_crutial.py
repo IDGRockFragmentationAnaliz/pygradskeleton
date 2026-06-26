@@ -16,7 +16,7 @@ CRUCIAL_C = np.uint8(9)
 
 
 @njit(cache=True, inline="always")
-def match_c_flat(image_flat, destructible_flat, alpha_flat, bitmasks, p, w):
+def match_c(image_flat, destructible_flat, alpha_flat, bitmasks, p, w):
     bitmask = bitmasks[p]
     match_c_right_flat(bitmask, image_flat, destructible_flat, alpha_flat, p)
     match_c_left_flat(bitmask, image_flat, destructible_flat, alpha_flat, p)
