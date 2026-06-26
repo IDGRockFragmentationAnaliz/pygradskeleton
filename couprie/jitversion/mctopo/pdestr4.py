@@ -24,10 +24,11 @@ def pdestr4(image, y, x):
     return False
 
 @njit(cache=True, inline="always")
-def pdestr4_flat(image, p, w):
+def pdestr4_flat(image, bitmasks, p, w):
     bitmask = bitmask_p_flat(image, p, w)
     t4mm = T4_ZEROS[bitmask]
     t8p = T8_ONES[bitmask]
+    bitmasks[p] = bitmask
     if t4mm == 1 and t8p == 1:
         return True
     return False

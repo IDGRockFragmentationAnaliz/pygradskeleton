@@ -20,12 +20,13 @@ def lhthinpar(image, copy=True):
 
     h, w = image.shape
     destructible = np.ones((h + 2, w + 2), dtype=np.uint8)
-    update_edge_border_zeros(destructible)
+    set_edge_border_zeros(destructible)
     alpha = np.empty((h + 2, w + 2), dtype=np.uint8)
     bitmask = np.empty((h + 2, w + 2), dtype=np.uint8)
     image_padded = np.pad(image, 1, mode='edge')
     image_padded_flat = image_padded.ravel()
     destructible_flat = destructible.ravel()
+    bitmask_flat = bitmask.ravel()
 
     idx = np.flatnonzero(destructible)
 
@@ -34,9 +35,11 @@ def lhthinpar(image, copy=True):
     h_pad = h + 2
     t_pad_total = 0.0
     t_pdestr4 = 0.0
+    t_flatnonzero = 0.0
     t_alpha8m = 0.0
     t_match_c = 0.0
     t_end = 0.0
+    t_flatnonzero2 = 0.0
     t_mask = 0.0
     for i in range(10000):
         #print(i)
@@ -46,19 +49,25 @@ def lhthinpar(image, copy=True):
 
         t0 = time.perf_counter()
         destructible = pdestr4_center(image_padded, destructible, bitmask, idx)
-        destidx = np.flatnonzero(destructible)
         t_pdestr4 += time.perf_counter() - t0
+
+        t0 = time.perf_counter()
+        destidx = flatones_idx(destructible, idx)
+        t_flatnonzero += time.perf_counter() - t0
 
         t0 = time.perf_counter()
         alpha = alpha8m_center(image_padded, alpha, destidx, w_pad)
         t_alpha8m += time.perf_counter() - t0
 
         t0 = time.perf_counter()
-        match_c_center(image_padded_flat, destructible_flat, alpha_flat, destidx, w_pad)
+        match_c_center(image_padded_flat, destructible_flat, alpha_flat, bitmask_flat, destidx, w_pad)
         t_match_c += time.perf_counter() - t0
 
         t0 = time.perf_counter()
-        idx = np.flatnonzero(destructible == 1)
+        idx = flatones_idx(destructible, idx)
+        t_flatnonzero2 += time.perf_counter() - t0
+
+        t0 = time.perf_counter()
         destructible_kernel_update(destructible_flat, idx, h_pad, w_pad)
         t_mask += time.perf_counter() - t0
 
@@ -75,14 +84,24 @@ def lhthinpar(image, copy=True):
 
     print(f"padding total: {t_pad_total:.6f} sec")
     print(f"pdestr4 total: {t_pdestr4:.6f} sec")
+    print(f"flatnonzero total: {t_flatnonzero:.6f} sec")
     print(f"alpha8m total: {t_alpha8m:.6f} sec")
     print(f"match_c total: {t_match_c:.6f} sec")
+    print(f"flatnonzero2 total: {t_flatnonzero2:.6f} sec")
     print(f"t_mask total: {t_mask:.6f} sec")
     print(f"t_end total: {t_end:.6f} sec")
     return image_padded[1:-1,1:-1]
 
-
-from numba import njit
+@njit(cache=True)
+def flatones_idx(destructible, idx):
+    out = np.empty(idx.size, dtype=idx.dtype)
+    n = 0
+    for i in range(idx.size):
+        p = idx[i]
+        if destructible.flat[p] == 1:
+            out[n] = p
+            n += 1
+    return out[:n]
 
 @njit(cache=True)
 def destructible_kernel_update(destructible, idx, h, w):
@@ -126,12 +145,14 @@ def destructible_kernel_update(destructible, idx, h, w):
                 d[np.uintp(p - w)] = 1
 
 
-@njit(cache=True)
+@njit(cache=True, parallel=True)
 def pdestr4_center(image, destructible, bitmask, idx):
     h, w = image.shape
+    sparse = np.empty(idx.size, dtype=idx.dtype)
+    k = 0
     for i in prange(idx.size):
         p = idx[i]
-        destructible.flat[p] = pdestr4_flat(image.flat, p, w)
+        destructible.flat[p] = pdestr4_flat(image.flat, bitmask.flat, p, w)
     return destructible
 
 @njit(cache=True, parallel=True)
@@ -142,17 +163,18 @@ def alpha8m_center(image, alpha, destridx, w):
     return alpha
 
 @njit(cache=True)
-def match_c_center(image, destructible, alpha, destridx, w):
+def match_c_center(image, destructible, alpha, bitmask, destridx, w):
     image = image.flat
     destructible = destructible.flat
     alpha = alpha.flat
+    bitmask = bitmask.flat
 
     for i in range(destridx.size):
-        flat_idx = destridx[i]
-        match_c_flat(image, destructible, alpha, flat_idx, w)
+        p = destridx[i]
+        match_c_flat(image, destructible, alpha, bitmask, p, w)
 
 
-def update_edge_border_zeros(p):
+def set_edge_border_zeros(p):
     # сначала боковые стороны, только центральная часть
     p[1:-1, 0] = 0
     p[1:-1, -1] = 0

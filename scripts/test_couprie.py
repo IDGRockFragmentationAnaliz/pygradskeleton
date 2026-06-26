@@ -21,7 +21,7 @@ def main():
     print("lhthinpar:", time.perf_counter() - t)
 
     t = time.perf_counter()
-    #image_thin = lhthinpar_asymmetric(image)
+    image_thin = lhthinpar_asymmetric(image)
     print("lhthinpar_asymmetric", time.perf_counter() - t)
     #
     # t = time.perf_counter()
@@ -61,8 +61,8 @@ def main():
     # ax3.sharex(ax0)
     # ax3.sharey(ax0)
 
-    ax0.set_xlim([230, 400])
-    ax0.set_ylim([25, 195])
+    #ax0.set_xlim([230, 400])
+    #ax0.set_ylim([25, 195])
 
     plt.tight_layout()
     #plt.savefig("../pictures/example.png", dpi=300, bbox_inches="tight")

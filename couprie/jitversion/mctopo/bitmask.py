@@ -38,16 +38,41 @@ def bitmask_pp(image, y, x):
     if image[y + 1, x - 1] > c: mask_p |= 1 << 7
     return mask_p
 
+
 @njit(cache=True, inline="always")
 def bitmask_p_flat(image_flat, idx, w):
-    c = image_flat[idx]
-    mask_p = np.uint8(0)
-    if image_flat[np.uintp(idx + w)] >= c: mask_p |= M1
-    if image_flat[np.uintp(idx + w + 1)] >= c: mask_p |= M2
-    if image_flat[np.uintp(idx + 1)] >= c: mask_p |= M3
-    if image_flat[np.uintp(idx - w + 1)] >= c: mask_p |= M4
-    if image_flat[np.uintp(idx - w)] >= c: mask_p |= M5
-    if image_flat[np.uintp(idx - w - 1)] >= c: mask_p |= M6
-    if image_flat[np.uintp(idx - 1)] >= c: mask_p |= M7
-    if image_flat[np.uintp(idx + w - 1)] >= c: mask_p |= M8
-    return mask_p
+    center = image_flat[idx]
+    mask = np.uint8(0)
+
+    # m1: right
+    if image_flat[np.uintp(idx + 1)] >= center:
+        mask |= M1
+
+    # m2: up-right
+    if image_flat[np.uintp(idx - w + 1)] >= center:
+        mask |= M2
+
+    # m3: up
+    if image_flat[np.uintp(idx - w)] >= center:
+        mask |= M3
+
+    # m4: up-left
+    if image_flat[np.uintp(idx - w - 1)] >= center:
+        mask |= M4
+
+    # m5: left
+    if image_flat[np.uintp(idx - 1)] >= center:
+        mask |= M5
+
+    # m6: down-left
+    if image_flat[np.uintp(idx + w - 1)] >= center:
+        mask |= M6
+
+    # m7: down
+    if image_flat[np.uintp(idx + w)] >= center:
+        mask |= M7
+
+    # m8: down-right
+    if image_flat[idx + w + 1] >= center: mask |= M8
+
+    return mask

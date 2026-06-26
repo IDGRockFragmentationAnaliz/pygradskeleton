@@ -1,7 +1,7 @@
 import numpy as np
 import numba as nb
 from numba import njit
-
+from ..mctopo.bitmask import bitmask_p_flat
 
 M1 = np.uint8(1 << 0)
 M2 = np.uint8(1 << 1)
@@ -17,51 +17,12 @@ CRUCIAL_C = np.uint8(9)
 
 
 @njit(cache=True, inline="always")
-def match_c_flat(image_flat, destructible_flat, alpha_flat, idx, w):
-    bitmask = bitmask_b_flat(image_flat, idx, w)
-    match_c_right_flat(bitmask, image_flat, destructible_flat, alpha_flat, idx)
-    match_c_left_flat(bitmask, image_flat, destructible_flat, alpha_flat, idx)
-    match_c_up_flat(bitmask, image_flat, destructible_flat, alpha_flat, idx, w)
-    match_c_down_flat(bitmask, image_flat, destructible_flat, alpha_flat, idx, w)
-
-@njit(cache=True, inline="always")
-def bitmask_b_flat(image_flat, idx, w):
-    center = image_flat[idx]
-    mask = np.uint8(0)
-
-    # m1: right
-    if image_flat[np.uintp(idx + 1)] >= center:
-        mask |= M1
-
-    # m2: up-right
-    if image_flat[np.uintp(idx - w + 1)] >= center:
-        mask |= M2
-
-    # m3: up
-    if image_flat[np.uintp(idx - w)] >= center:
-        mask |= M3
-
-    # m4: up-left
-    if image_flat[np.uintp(idx - w - 1)] >= center:
-        mask |= M4
-
-    # m5: left
-    if image_flat[np.uintp(idx - 1)] >= center:
-        mask |= M5
-
-    # m6: down-left
-    if image_flat[np.uintp(idx + w - 1)] >= center:
-        mask |= M6
-
-    # m7: down
-    if image_flat[np.uintp(idx + w)] >= center:
-        mask |= M7
-
-    # m8: down-right
-    if image_flat[idx + w + 1] >= center: mask |= M8
-
-    return mask
-
+def match_c_flat(image_flat, destructible_flat, alpha_flat, bitmasks, p, w):
+    bitmask = bitmask_p_flat(image_flat, p, w)#bitmasks[p]#
+    match_c_right_flat(bitmask, image_flat, destructible_flat, alpha_flat, p)
+    match_c_left_flat(bitmask, image_flat, destructible_flat, alpha_flat, p)
+    match_c_up_flat(bitmask, image_flat, destructible_flat, alpha_flat, p, w)
+    match_c_down_flat(bitmask, image_flat, destructible_flat, alpha_flat, p, w)
 
 @njit(cache=True, inline="always")
 def match_c_right_flat(bitmask, image_flat, destructible_flat, alpha_flat, idx):
