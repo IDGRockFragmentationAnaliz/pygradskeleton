@@ -18,13 +18,13 @@ CRUCIAL_C = np.uint8(9)
 @njit(cache=True, inline="always")
 def match_c(image_flat, destructible_flat, alpha_flat, bitmasks, p, w):
     bitmask = bitmasks[p]
-    match_c_right_flat(bitmask, image_flat, destructible_flat, alpha_flat, p)
-    match_c_left_flat(bitmask, image_flat, destructible_flat, alpha_flat, p)
-    match_c_up_flat(bitmask, image_flat, destructible_flat, alpha_flat, p, w)
-    match_c_down_flat(bitmask, image_flat, destructible_flat, alpha_flat, p, w)
+    _match_c_right_flat(bitmask, image_flat, destructible_flat, alpha_flat, p)
+    _match_c_left_flat(bitmask, image_flat, destructible_flat, alpha_flat, p)
+    _match_c_up_flat(bitmask, image_flat, destructible_flat, alpha_flat, p, w)
+    _match_c_down_flat(bitmask, image_flat, destructible_flat, alpha_flat, p, w)
 
 @njit(cache=True, inline="always")
-def match_c_right_flat(bitmask, image_flat, destructible_flat, alpha_flat, idx):
+def _match_c_right_flat(bitmask, image_flat, destructible_flat, alpha_flat, idx):
     right = np.uintp(idx + 1)
 
     if destructible_flat[right] == NON_DESTRUCTIBLE or destructible_flat[idx] == NON_DESTRUCTIBLE:
@@ -49,7 +49,7 @@ def match_c_right_flat(bitmask, image_flat, destructible_flat, alpha_flat, idx):
 
 
 @njit(cache=True, inline="always")
-def match_c_left_flat(bitmask, image_flat, destructible_flat, alpha_flat, idx):
+def _match_c_left_flat(bitmask, image_flat, destructible_flat, alpha_flat, idx):
     left = np.uintp(idx - 1)
 
     if destructible_flat[left] == NON_DESTRUCTIBLE or destructible_flat[idx] == NON_DESTRUCTIBLE:
@@ -74,7 +74,7 @@ def match_c_left_flat(bitmask, image_flat, destructible_flat, alpha_flat, idx):
 
 
 @njit(cache=True, inline="always")
-def match_c_up_flat(bitmask, image_flat, destructible_flat, alpha_flat, idx, w):
+def _match_c_up_flat(bitmask, image_flat, destructible_flat, alpha_flat, idx, w):
     up = np.uintp(idx - w)
 
     if destructible_flat[up] == NON_DESTRUCTIBLE or destructible_flat[idx] == NON_DESTRUCTIBLE:
@@ -99,7 +99,7 @@ def match_c_up_flat(bitmask, image_flat, destructible_flat, alpha_flat, idx, w):
 
 
 @njit(cache=True, inline="always")
-def match_c_down_flat(bitmask, image_flat, destructible_flat, alpha_flat, idx, w):
+def _match_c_down_flat(bitmask, image_flat, destructible_flat, alpha_flat, idx, w):
     down = np.uintp(idx + w)
 
     if destructible_flat[down] == NON_DESTRUCTIBLE or destructible_flat[idx] == NON_DESTRUCTIBLE:

@@ -8,35 +8,27 @@ def alpha8m(image_flat, idx, w):
     best = val
 
     v = image_flat[idx + 1]
-    if v < val:
-        best = v
+    if v < val: best = v
 
     v = image_flat[idx - w + 1]
-    if v < val and (best == val or v > best):
-        best = v
+    if v < val and (best == val or v > best): best = v
 
     v = image_flat[idx - w]
-    if v < val and (best == val or v > best):
-        best = v
+    if v < val and (best == val or v > best): best = v
 
     v = image_flat[idx - w - 1]
-    if v < val and (best == val or v > best):
-        best = v
+    if v < val and (best == val or v > best): best = v
 
     v = image_flat[idx - 1]
-    if v < val and (best == val or v > best):
-        best = v
+    if v < val and (best == val or v > best): best = v
 
     v = image_flat[idx + w - 1]
-    if v < val and (best == val or v > best):
-        best = v
+    if v < val and (best == val or v > best): best = v
 
     v = image_flat[idx + w]
-    if v < val and (best == val or v > best):
-        best = v
+    if v < val and (best == val or v > best): best = v
 
     v = image_flat[idx + w + 1]
-    if v < val and (best == val or v > best):
-        best = v
+    if v < val and (best == val or v > best): best = v
 
     return best
