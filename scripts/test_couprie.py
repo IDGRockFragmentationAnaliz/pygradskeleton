@@ -2,13 +2,13 @@ import cv2
 import time
 import numpy as np
 from matplotlib import pyplot as plt
-from couprie.skelpar import lhthinpar, lhthinpar_asymmetric, lhthinpar_asymmetric_new
-from couprie.jitversion.llambdakern import llambdakern
+from couprie.skelpar import lhthinpar, lhthinpar_asymmetric
+from couprie.llambdakern import llambdakern
 from couprie.jitversion.thin_segment import thin_segment
 from couprie.jitversion.crestrestoration import crestrestore
 
 def main():
-    img_path = "../test_images/test_1.png"
+    img_path = "../test_images/test_2.png"
     original = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
 
     if original is None:
@@ -17,20 +17,20 @@ def main():
     # Копия для обработки
     image = original.copy()
     t = time.perf_counter()
-    image_thin1 = lhthinpar_asymmetric_new(image)
+    image_thin = lhthinpar(image, progress=True)
     print("lhthinpar:", time.perf_counter() - t)
 
     t = time.perf_counter()
-    #image_thin = lhthinpar_asymmetric_new(image_thin1)
+    image_thin = lhthinpar_asymmetric(image_thin, progress=True)
     print("lhthinpar_asymmetric", time.perf_counter() - t)
     #
-    # t = time.perf_counter()
-    # image_lamb = llambdakern(image_thin, 20)
-    # print("llambdakern", time.perf_counter() - t)
+    t = time.perf_counter()
+    image_lamb = llambdakern(image_thin, 20, progress=True)
+    print("llambdakern", time.perf_counter() - t)
     #
-    # t = time.perf_counter()
-    # image_skel = thin_segment(image_lamb)
-    # print("thin_segment", time.perf_counter() - t)
+    t = time.perf_counter()
+    image_skel = thin_segment(image_lamb)
+    print("thin_segment", time.perf_counter() - t)
 
     # Отображение
     fig = plt.figure(figsize=(7, 7))
@@ -41,25 +41,25 @@ def main():
     ax0.axis("off")
 
     ax1 = fig.add_subplot(2, 2, 2)
-    ax1.imshow(image_thin1, cmap="gray")
+    ax1.imshow(image_thin, cmap="gray")
     ax1.set_title("Процесс утоньшения границ")
     ax1.axis("off")
     ax1.sharex(ax0)
     ax1.sharey(ax0)
 
     ax2 = fig.add_subplot(2, 2, 4)
-    # ax2.imshow(image_thin, cmap="gray")
-    # ax2.set_title("Лямбда-левеленг")
-    # ax2.axis("off")
-    # ax2.sharex(ax0)
-    # ax2.sharey(ax0)
+    ax2.imshow(image_lamb, cmap="gray")
+    ax2.set_title("Лямбда-левеленг")
+    ax2.axis("off")
+    ax2.sharex(ax0)
+    ax2.sharey(ax0)
     #
-    # ax3 = fig.add_subplot(2, 2, 3)
-    # ax3.imshow(image_skel, cmap="gray")
-    # ax3.set_title("Конечное изображение")
-    # ax3.axis("off")
-    # ax3.sharex(ax0)
-    # ax3.sharey(ax0)
+    ax3 = fig.add_subplot(2, 2, 3)
+    ax3.imshow(image_skel, cmap="gray")
+    ax3.set_title("Конечное изображение")
+    ax3.axis("off")
+    ax3.sharex(ax0)
+    ax3.sharey(ax0)
 
     #ax0.set_xlim([230, 400])
     #ax0.set_ylim([25, 195])

@@ -2,7 +2,7 @@ from numba import njit
 import numpy as np
 
 
-@njit(cache=True)
+@njit(cache=True, inline="always")
 def alpha8m(image, y, x):
     val = image[y, x]
     found = False

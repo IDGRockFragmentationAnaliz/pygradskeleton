@@ -3,7 +3,7 @@ import numpy as np
 from .mctopo.alpha8m import alpha8m
 from .mctopo.lambdadestr4 import lambdadestr4
 
-@njit
+@njit(cache=True, inline="always")
 def abaisse4(image, y, x, lam):
     mod = False
     while lambdadestr4(image, y, x, lam):

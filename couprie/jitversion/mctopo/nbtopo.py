@@ -18,7 +18,7 @@ def nbtopo(image, y, x):
 
     return t4m, t4mm, t8p, t8pp
 
-@njit(cache=True)
+@njit(cache=True, inline="always")
 def bitmask_mm(image, y, x):
     val = image[y, x]
     mask_mm = 0

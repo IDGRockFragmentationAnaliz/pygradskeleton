@@ -1,21 +1,14 @@
 import numpy as np
 import numba as nb
 from numba import njit, prange
-import matplotlib.pyplot as plt
-import time
 
-from numba.np.ufunc import parallel
-
-from .matcher import Matcher
-from .alpha_builder import AlphaBuilder
 from .jitflatversion.mctopo.pdestr4 import pdestr4
 from .jitflatversion.mctopo.alpha8m import alpha8m
 from .jitflatversion.match_crutial import match_c, match_c_asymmetric
-from .jitversion.mctopo.pdestr4 import pdestr4_all
 
 from .jitflatversion.utils import expand_sparce, flatones_idx, set_edge_zeros, set_edge_pad1
 
-def lhthinpar(image, copy=True):
+def lhthinpar(image, max_inter=10000, copy=True, progress=False):
     if copy:
         image = image.copy()
 
@@ -30,10 +23,14 @@ def lhthinpar(image, copy=True):
     bitmask_flat = bitmask.ravel()
     alpha_flat = alpha.ravel()
 
+    total = destructible_flat.size
+    pbar = _make_progress(total, progress, desc="lhthinpar")
+    first_iteration = True
+
     idx = np.flatnonzero(destructible)
     w_pad = w + 2
     h_pad = h + 2
-    for i in range(10000):
+    for i in range(max_inter):
         #Обновление паддинга обновленного фото
         set_edge_pad1(image_padded)
         # Вычисление разрушаемых точек в актуальных точках
@@ -47,17 +44,23 @@ def lhthinpar(image, copy=True):
         # Исключение критиеских точек критических точек
         idx = flatones_idx(destructible, idx)
 
-        print("count:", len(idx))
+        if pbar is not None:
+            pbar.set_postfix(iter=i)
+            pbar.n = idx.size
+            if first_iteration:
+                pbar.total = idx.size
+                first_iteration = False
+            pbar.refresh()
         if idx.size == 0:
-            print("total loop", i)
             break
+
         #Обновление изображения
         image_padded.flat[idx] = alpha.flat[idx]
         # Расширение диапазона актуальности
         idx = expand_sparce(destructible, idx, h_pad, w_pad)
     return image_padded[1:-1,1:-1]
 
-def lhthinpar_asymmetric(image, copy=True):
+def lhthinpar_asymmetric(image, max_inter=10000, copy=True, progress=False):
     if copy:
         image = image.copy()
 
@@ -72,10 +75,14 @@ def lhthinpar_asymmetric(image, copy=True):
     bitmask_flat = bitmask.ravel()
     alpha_flat = alpha.ravel()
 
+    total = destructible_flat.size
+    pbar = _make_progress(total, progress, desc="lhthinpar asymmetric")
+    first_iteration = True
+
     idx = np.flatnonzero(destructible)
     w_pad = w + 2
     h_pad = h + 2
-    for i in range(10000):
+    for i in range(max_inter):
         #Обновление паддинга обновленного фото
         set_edge_pad1(image_padded)
         # Вычисление разрушаемых точек в актуальных точках
@@ -89,10 +96,16 @@ def lhthinpar_asymmetric(image, copy=True):
         # Исключение критиеских точек критических точек
         idx = flatones_idx(destructible, idx)
 
-        print("count:", len(idx))
+        if pbar is not None:
+            pbar.set_postfix(iter=i)
+            pbar.n = idx.size
+            if first_iteration:
+                pbar.total = idx.size
+                first_iteration = False
+            pbar.refresh()
         if idx.size == 0:
-            print("total loop", i)
             break
+
         #Обновление изображения
         image_padded.flat[idx] = alpha.flat[idx]
         # Расширение диапазона актуальности
@@ -136,3 +149,16 @@ def _match_c_asymmetric_center(image, destructible, alpha, bitmask, destridx, w)
     for i in range(destridx.size):
         p = destridx[i]
         match_c_asymmetric(image, destructible, alpha, bitmask, p, w)
+
+
+def _make_progress(total, enabled, desc="lhthinpar"):
+    if not enabled:
+        return None
+
+    try:
+        from tqdm.auto import tqdm
+    except ImportError:
+        print("tqdm is not installed; progress display disabled")
+        return None
+
+    return tqdm(total=total, desc=desc)

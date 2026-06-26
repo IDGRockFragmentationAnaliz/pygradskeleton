@@ -7,7 +7,7 @@ from ..voisin import voisin
 
 COMP4TAB = get_comp4tab()
 
-@njit
+@njit(cache=True, inline="always")
 def lambdadestr4(image, y, x, lam):
     t4m, t4mm, t8p, t8pp = nbtopo(image, y, x)
     if t4mm == 1 and t8p == 1:
