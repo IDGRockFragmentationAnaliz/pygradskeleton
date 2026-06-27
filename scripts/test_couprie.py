@@ -8,22 +8,32 @@ from couprie.jitversion.thin_segment import thin_segment
 from couprie.jitversion.crestrestoration import crestrestore
 
 def main():
-    img_path = "../test_images/test_2.png"
+    img_path = "../test_images/test_1.png"
     original = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
 
     if original is None:
         raise FileNotFoundError(f"Не удалось загрузить изображение: {img_path}")
 
     # Копия для обработки
-    image = original.copy()
-    t = time.perf_counter()
-    image_thin = lhthinpar(image, progress=True)
-    print("lhthinpar:", time.perf_counter() - t)
-
-    t = time.perf_counter()
-    image_thin = lhthinpar_asymmetric(image_thin, progress=True)
-    print("lhthinpar_asymmetric", time.perf_counter() - t)
+    # image = original.copy()
+    # t = time.perf_counter()
+    # image_thin = lhthinpar(image, progress=True)
+    # print("lhthinpar:", time.perf_counter() - t)
     #
+    # t = time.perf_counter()
+    # image_thin = lhthinpar_asymmetric(image_thin, progress=True)
+    # print("lhthinpar_asymmetric", time.perf_counter() - t)
+    #
+    # # Сохраняем промежуточный результат перед llambdakern
+    cache_path = "../test_images/image_before_llambdakern.png"
+    # cv2.imwrite(cache_path, image_thin)
+
+    # Тут же загружаем его обратно
+    image_thin = cv2.imread(cache_path, cv2.IMREAD_GRAYSCALE)
+
+    if image_thin is None:
+        raise FileNotFoundError(f"Не удалось загрузить промежуточное изображение: {cache_path}")
+
     t = time.perf_counter()
     image_lamb = llambdakern(image_thin, 20, progress=True)
     print("llambdakern", time.perf_counter() - t)

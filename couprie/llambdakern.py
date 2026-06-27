@@ -15,26 +15,25 @@ def llambdakern(image, lam, copy = True, progress=False):
     set_edge_zeros(seen_rect)
     seen = seen_rect.ravel()
     sparce = np.flatnonzero(seen)
-    head = (height - 2) * (width - 2)
 
-    pbar = _make_progress(head, progress)
+    pbar = _make_progress(sparce.size, progress)
     first_iteration = True
 
-    while head > 0:
-        head = _llambdakern_loop(image, seen, sparce, head, lam)
+    while sparce.size > 0:
+        sparce = _llambdakern_loop(image, seen, sparce, lam)
         if pbar is not None:
-            pbar.n = head
+            pbar.n = sparce.size
             if first_iteration:
-                pbar.total = head
+                pbar.total = sparce.size
                 first_iteration = False
             pbar.refresh()
     return image
 
 @njit(cache=True)
-def _llambdakern_loop(image, seen, sparce, head, lam):
+def _llambdakern_loop(image, seen, sparce, lam):
     height, width = image.shape
-
-
+    new_sparce = np.empty( (height-2) * (width-2), dtype=sparce.dtype)
+    new_head = 0
     for i in range(sparce.size):
         p = sparce[i]
 
@@ -43,8 +42,6 @@ def _llambdakern_loop(image, seen, sparce, head, lam):
 
         if seen[p] == 1:
             seen[p] = 0
-            head -= 1
-
             if abaisse4(image, y, x, lam):
                 for k in range(8):
                     qy, qx = voisin(y, x, k)
@@ -54,9 +51,9 @@ def _llambdakern_loop(image, seen, sparce, head, lam):
                         seen[q] = 0
                     elif seen[q] == 0:
                         seen[q] = 1
-                        head += 1
-
-    return head
+                        new_sparce[new_head] = q
+                        new_head += 1
+    return new_sparce[:new_head]
 
 def _make_progress(total, enabled, desc="llambdakern"):
     if not enabled:
