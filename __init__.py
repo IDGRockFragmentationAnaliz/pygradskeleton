@@ -1,2 +1,2 @@
 from .main import grayscale_skeletonize
-from couprie import couprie
+from .couprie import couprie
