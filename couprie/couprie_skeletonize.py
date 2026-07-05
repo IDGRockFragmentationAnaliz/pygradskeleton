@@ -3,7 +3,7 @@ from .llambdakern import llambdakern
 from .jitversion.thin_segment import thin_segment
 
 
-def couprie(image, lam=20, copy=True, progress=False):
+def couprie(image, lam=20, threshold=128, copy=True, progress=False):
     if copy:
         image = image.copy()
     image = lhthinpar(image, copy=False, progress=progress)
@@ -11,7 +11,7 @@ def couprie(image, lam=20, copy=True, progress=False):
     image = llambdakern(image, lam, copy=False, progress=progress)
     if progress:
         print("thin_segment: started")
-    borders = thin_segment(image)
+    borders = thin_segment(image, threshold)
     if progress:
         print("couprie: ended")
     return borders
