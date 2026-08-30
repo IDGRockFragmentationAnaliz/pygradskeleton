@@ -2,15 +2,7 @@
 
 
 ```commandline
-pip intsall numpy
-pip install opencv-contrib-python
-pip install numba
-```
-
-## Optional
-```commandline
-pip install matplotlib
-pip install tqdm
+python -m pip install -r requirements.txt
 ```
 
 ## Couprie thinning
