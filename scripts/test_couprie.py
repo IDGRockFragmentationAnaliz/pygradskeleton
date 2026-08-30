@@ -4,6 +4,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from couprie.skelpar import lhthinpar, lhthinpar_asymmetric
 from couprie.llambdakern import llambdakern
+from couprie.llambdakern_c import llambdakern_c
 from couprie.jitversion.thin_segment import thin_segment
 from couprie.jitversion.crestrestoration import crestrestore
 
@@ -35,7 +36,7 @@ def main():
         raise FileNotFoundError(f"Не удалось загрузить промежуточное изображение: {cache_path}")
 
     t = time.perf_counter()
-    image_lamb = llambdakern(image_thin, 20, progress=True)
+    image_lamb = llambdakern_c(image_thin, 50, progress=True)
     print("llambdakern", time.perf_counter() - t)
     #
     t = time.perf_counter()
