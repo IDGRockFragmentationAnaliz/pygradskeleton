@@ -28,15 +28,16 @@ def main():
     # # Сохраняем промежуточный результат перед llambdakern
     # cache_path = "../test_images/image_before_llambdakern.png"
     # cv2.imwrite(cache_path, image_thin)
-
     # Тут же загружаем его обратно
     # image_thin = cv2.imread(cache_path, cv2.IMREAD_GRAYSCALE)
+
+    image_restored = crestrestore(image_thin, progress=True)
 
     if image_thin is None:
         raise FileNotFoundError(f"Не удалось загрузить промежуточное изображение: {cache_path}")
 
     t = time.perf_counter()
-    image_lamb = llambdakern_c(image_thin, 50, progress=True)
+    image_lamb = llambdakern_c(image_restored, 50, progress=True)
     print("llambdakern", time.perf_counter() - t)
     #
     t = time.perf_counter()
@@ -44,33 +45,33 @@ def main():
     print("thin_segment", time.perf_counter() - t)
 
     # Отображение
-    fig = plt.figure(figsize=(7, 7))
+    fig = plt.figure(figsize=(9, 9))
 
-    ax0 = fig.add_subplot(2, 2, 1)
+    ax0 = fig.add_subplot(1, 3, 1)
     ax0.imshow(original, cmap="gray")
     ax0.set_title("Исходное изображение")
     ax0.axis("off")
 
-    ax1 = fig.add_subplot(2, 2, 2)
+    ax1 = fig.add_subplot(1, 3, 2)
     ax1.imshow(image_thin, cmap="gray")
     ax1.set_title("Процесс утоньшения границ")
     ax1.axis("off")
     ax1.sharex(ax0)
     ax1.sharey(ax0)
 
-    ax2 = fig.add_subplot(2, 2, 4)
-    ax2.imshow(image_lamb, cmap="gray")
+    ax2 = fig.add_subplot(1, 3, 3)
+    ax2.imshow(image_restored, cmap="gray")
     ax2.set_title("Лямбда-левеленг")
     ax2.axis("off")
     ax2.sharex(ax0)
     ax2.sharey(ax0)
-    #
-    ax3 = fig.add_subplot(2, 2, 3)
-    ax3.imshow(image_skel, cmap="gray")
-    ax3.set_title("Конечное изображение")
-    ax3.axis("off")
-    ax3.sharex(ax0)
-    ax3.sharey(ax0)
+    # #
+    # ax3 = fig.add_subplot(2, 3, 3)
+    # ax3.imshow(image_skel, cmap="gray")
+    # ax3.set_title("Конечное изображение")
+    # ax3.axis("off")
+    # ax3.sharex(ax0)
+    # ax3.sharey(ax0)
 
     #ax0.set_xlim([230, 400])
     #ax0.set_ylim([25, 195])
