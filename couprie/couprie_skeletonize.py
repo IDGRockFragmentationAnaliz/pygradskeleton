@@ -25,7 +25,7 @@ def couprie(
             n_repeat=-1,
             progress=progress,
         )
-    image = llambdakern_c(image, lam, copy=False, progress=progress)
+    image = llambdakern_c(image, lam, copy=True, progress=progress)
     if progress:
         print("thin_segment: started")
     borders = thin_segment(image, threshold)
