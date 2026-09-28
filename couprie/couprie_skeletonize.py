@@ -1,5 +1,6 @@
 from .skelpar import lhthinpar, lhthinpar_asymmetric
 from .llambdakern import llambdakern
+from .llambdakern_c import llambdakern_c
 from .jitversion.crestrestoration import crestrestore
 from .jitversion.thin_segment import thin_segment
 
@@ -24,7 +25,7 @@ def couprie(
             n_repeat=-1,
             progress=progress,
         )
-    image = llambdakern(image, lam, copy=False, progress=progress)
+    image = llambdakern_c(image, lam, copy=False, progress=progress)
     if progress:
         print("thin_segment: started")
     borders = thin_segment(image, threshold)
